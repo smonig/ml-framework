@@ -1,0 +1,18 @@
+# features to be used for training in the mu tauh channel
+cont_features:
+  - muPt
+  - tauPt
+  - ditauPt        # pT of muon, tau_had and MET
+  - Njets
+  - leadingjetPt
+  - trailingjetPt
+  - dijetPt
+  - dijetMass
+  - dijetdeltaEta
+  - pairvisMass
+  - ditauMass      # calculated from GEF
+  - muMETmt
+  - puppimet
+
+# training weight
+weight_name: 'w_cp' # to do: re-format nTuples to have global weight
