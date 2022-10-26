@@ -5,7 +5,7 @@ cont_features:
   - ditauPt        # pT of muon, tau_had and MET
   - Njets
   - leadingjetPt
-  - trailingjetPt
+  - subleadingjetPt
   - dijetPt
   - dijetMass
   - dijetdeltaEta

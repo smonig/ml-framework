@@ -44,7 +44,8 @@ def main(cfg: DictConfig) -> None:
                 processes = list(sample.values())[0]
                 for process_name, process_cfg in processes.items():
                     print(f'    loading {process_name}')
-                    data_sample = f[cfg["input_tree_name"]].arrays(input_branches, cut=process_cfg['cut'], library='pd')
+                    #data_sample = f[cfg["input_tree_name"]].arrays(input_branches, cut=process_cfg['cut'], library='pd')
+                    data_sample = f[cfg["input_tree_name"]].arrays(input_branches, library='pd')
                     if data_sample.shape[0]==0:
                         raise RuntimeError(f'DataFrame for process ({process_name}) is empty')
                     data_sample['group_name'] = process_name
@@ -71,7 +72,7 @@ def main(cfg: DictConfig) -> None:
         raise Exception(f'\nFound {inf_sum} inf values in columns: {data_infs.columns[data_infs.any(axis=0)].tolist()}. Please take care of preprocessing them.')
 
     # clip tails in njets
-    data['njets'] = data.njets.clip(0, 5)
+    data['Njets'] = data.Njets.clip(0, 5)
 
     # split data into output nodes: either train+test (for training) or sample_name based splitting (for prediction)
     if cfg["for_training"]:

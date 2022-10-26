@@ -1,0 +1,44 @@
+##************************************************************
+## Config file to configure data preprocessing for training
+## Htautau CP analysis
+## mutauh channel
+##************************************************************
+
+for_training: True
+compute_w_CP: False ## CHECK!
+defaults:
+  - ../features@_global_: cp_htt_mutauh
+  - _self_
+
+# input section
+year: ???
+input_path: /home/sfalke/pbsSpace/HtautauCP/Run2/NTuples/10_2022_ProdMario/UL2018
+input_filename_template: '{sample_name}.root' # assume the same pattern for all input sample files
+input_tree_name: HTauTauTree/Nominal
+common_cut: None ## CHECK if all cuts already applied in nTuples
+input_samples:
+  - ZHToTauTau:
+      H_sig:
+        cut: '${common_cut}' 
+        class: 0 
+  - ZZ_2l2q:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+## Currently only placeholder processes to machinery work
+## Could define more classes (e.g. for other tau bkg's from MC or fake bkg with diff. cut to define CR...)
+
+# train/test splitter & scaler
+train_size: 0.9
+scaler:   # null to not apply scaling
+  with_mean: True
+  with_std: True
+pca: null # null to not apply PCA
+
+# output section
+output_path: data/mutau/UL${year}/skims/os/ # relative path
+output_filename_template: '{sample_name}'
+output_samples:
+  - train
+  - test
+pipe_name: 'input_pipe' # filename for saving the feature scaling pipe
