@@ -2,7 +2,7 @@
 cont_features:
   - muPt
   - tauPt
-  - ditauPt        # pT of muon, tau_had and MET
+  - ditauPt
   - Njets
   - leadingjetPt
   - subleadingjetPt
@@ -10,9 +10,11 @@ cont_features:
   - dijetMass
   - dijetdeltaEta
   - pairvisMass
-  - ditauMass      # calculated from GEF
+  - fastMTTmass
   - muMETmt
-  - puppimet
+  - PUPPImet
+cat_features:
 
 # training weight
-weight_name: 'w_cp' # to do: re-format nTuples to have global weight
+#weight_name: 'wPrefiring*wIDvsJet*wIDvsEle*wIDvsMu*wTrg*wIDMu*wTrkMu*wPU*wZpT*wToppT*wBtag*wMC*wSignal'
+weight_name: weight

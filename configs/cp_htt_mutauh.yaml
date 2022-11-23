@@ -1,0 +1,221 @@
+##************************************************************
+## Htautau CP analysis
+## mutauh channel
+##************************************************************
+
+##====================================================
+## General settings / paths
+##====================================================
+
+# input section
+year: ???
+
+input_path: /home/sfalke/pbsSpace/HtautauCP/Run2/NTuples/11_2022_ProdMario/UL2018_old
+input_filename_template: '{sample_name}.root' # assume the same pattern for all input sample files
+input_tree_name: HTauTauTree/Nominal
+
+common_cut: None ## CHECK if all cuts already applied in nTuples
+
+pipe_name: 'input_pipe' # filename for saving the feature scaling pipe
+input_pipe_file: 'data/mutau/UL2018/skims/os/input_pipe.pkl' # relative path
+
+
+##====================================================
+## Samples and event categories
+##====================================================
+
+input_samples:
+  - H_tautau_ggF:
+      H_sig:
+        cut: '${common_cut}' 
+        class: 0 
+  - EWKWMinus2Jets_Wlnu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - EWKWPlus2Jets_Wlnu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - EWKZ2Jets_Zll:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ST_tW_antitop:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ST_tW_top:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WminusHToTauTau:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WW_2l2nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WZ_1l3nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WZ_3l1nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ZZ_2l2nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ZZ_2l2q:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ZZ_4l:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+
+##====================================================
+## Variables / features
+##====================================================
+
+input_branches: # will be loaded from input ROOT files
+  - muPt
+  - tauPt
+  - ditauPt
+  - Njets
+  - leadingjetPt
+  - subleadingjetPt
+  - dijetPt
+  - dijetMass
+  - dijetdeltaEta
+  - pairvisMass
+  - fastMTTmass
+  - PUPPImet
+  - muMETmt
+  - evt
+  - run
+  - wPrefiring
+  - wIDvsJet
+  - wIDvsEle
+  - wIDvsMu
+  - wTrg
+  - wIDMu
+  - wTrkMu
+  - wPU
+  - wZpT
+  - wToppT
+  - wMC
+  - wSignal
+  - wBtag
+  
+cont_features: # will be stored in the output foldfile as continuous features
+  - muPt
+  - tauPt
+  - ditauPt
+  - Njets
+  - leadingjetPt
+  - subleadingjetPt
+  - dijetPt
+  - dijetMass
+  - dijetdeltaEta
+  - pairvisMass
+  - fastMTTmass
+  - muMETmt
+  - PUPPImet
+
+cat_features: # will be stored in the output foldfile as categorical features
+
+misc_features: # will be stored in the output foldfile as miscellaneous features
+  - evt
+  - run
+  - weight
+
+# total weight
+weights:
+  - wPrefiring
+  - wIDvsJet
+  - wIDvsEle
+  - wIDvsMu
+  - wTrg
+  - wIDMu
+  - wTrkMu
+  - wPU
+  - wZpT
+  - wToppT
+  - wMC
+  - wSignal
+  - wBtag
+
+# training weight
+weight_name: weight
+compute_w_CP: True
+
+
+##====================================================
+## Preprocessing & training
+##====================================================
+
+for_training: ???
+
+# scaling
+scaler:   # null to not apply scaling
+  with_mean: True
+  with_std: True
+pca: null # null to not apply PCA
+
+#training
+train_file: 'data/mutau/UL2018/skims/os/train.h5'
+n_splits: 2 # will split training data into len(set(xtrain_split_feature % n_splits)) folds and train a separate model on each
+xtrain_split_feature: 'evt' # used only if n_splits > 1; xtrain = cross-training
+train_size: 0.5 ## CHECK! want to make rotative setup
+
+# Training parameters
+model_param:
+  objective: 'multiclass'
+  num_class: 2 ## Change ones all samples are there
+  metric: ['multi_logloss', 'multi_error']
+  learning_rate: 0.1
+  early_stopping: 10
+  first_metric_only: True
+  metric_freq: 10
+  is_training_metric: True
+  max_depth: 3
+  bagging_fraction: 0.8
+  bagging_freq: 5
+  bagging_seed: 1357
+  feature_fraction: 0.8
+  lambda_l1: 0
+  feature_fraction_bynode: 1
+  num_threads: 4
+  verbosity: 1
+  seed: 1357
+  num_iterations: 10
+
+
+# mlflow cfg
+experiment_id: ???
+run_id: ???
+
+
+##====================================================
+## Outputs of different steps
+##====================================================
+
+# Preprocessing
+output_path: data/mutau/UL${year}/skims/os/ # relative path
+output_filename_template_trainData: '{sample_name}_train'
+output_filename_template_predData: '{sample_name}_forPred'
+output_samples:
+  - train
+  - test
+# Prediction
+output_filename_template_pred: 
+  for_datacard: '{sample_name}_pred.root'
+  for_evaluation: '{sample_name}.csv'
+output_tree_name_pred: HTauTauTree
+
+

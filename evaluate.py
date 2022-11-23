@@ -10,7 +10,7 @@ from omegaconf import DictConfig
 
 from utils.plotting import plot_class_score, plot_curves
 
-@hydra.main(config_path="configs", config_name="evaluate")
+@hydra.main(config_path="configs", config_name="cp_htautau_mutauh")
 def main(cfg: DictConfig) -> None:
     print('\n--> Loading predictions')
     run_folder = to_absolute_path(f'mlruns/{cfg["experiment_id"]}/{cfg["run_id"]}/')

@@ -12,19 +12,64 @@ defaults:
 
 # input section
 year: ???
-input_path: /home/sfalke/pbsSpace/HtautauCP/Run2/NTuples/10_2022_ProdMario/UL2018
+input_path: /home/sfalke/pbsSpace/HtautauCP/Run2/NTuples/11_2022_ProdMario/UL2018
 input_filename_template: '{sample_name}.root' # assume the same pattern for all input sample files
 input_tree_name: HTauTauTree/Nominal
 common_cut: None ## CHECK if all cuts already applied in nTuples
 input_samples:
-  - ZHToTauTau:
+  - H_tautau_ggF:
       H_sig:
         cut: '${common_cut}' 
         class: 0 
+  - EWKWMinus2Jets_Wlnu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - EWKWPlus2Jets_Wlnu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - EWKZ2Jets_Zll:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ST_tW_antitop:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ST_tW_top:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WminusHToTauTau:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WW_2l2nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WZ_1l3nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - WZ_3l1nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+  - ZZ_2l2nu:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
   - ZZ_2l2q:
       MC_bkg:
         cut: '${common_cut}'
         class: 1
+  - ZZ_4l:
+      MC_bkg:
+        cut: '${common_cut}'
+        class: 1
+
 ## Currently only placeholder processes to machinery work
 ## Could define more classes (e.g. for other tau bkg's from MC or fake bkg with diff. cut to define CR...)
 
@@ -42,3 +87,19 @@ output_samples:
   - train
   - test
 pipe_name: 'input_pipe' # filename for saving the feature scaling pipe
+
+# total weight
+weights:
+  - wPrefiring
+  - wIDvsJet
+  - wIDvsEle
+  - wIDvsMu
+  - wTrg
+  - wIDMu
+  - wTrkMu
+  - wPU
+  - wZpT
+  - wToppT
+  - wMC
+  - wSignal
+#  - wBtag

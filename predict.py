@@ -13,7 +13,7 @@ import mlflow
 from utils.processing import fill_placeholders, read_hdf
 from utils.inference import load_models, predict_folds
 
-@hydra.main(config_path="configs/predict")
+@hydra.main(config_path="configs")
 def main(cfg: DictConfig) -> None:
     # fill placeholders in the cfg parameters
     input_path = to_absolute_path(cfg["input_path"])
@@ -51,7 +51,7 @@ def main(cfg: DictConfig) -> None:
                 # extract original index
                 orig_filename = fill_placeholders(to_absolute_path(f'{cfg["orig_path"]}/{cfg["orig_filename_template"]}'), {'{sample_name}': sample_name})
                 with uproot.open(orig_filename) as f:
-                    t = f['TauCheck']
+                    t = f[cfg['input_tree_name']]
                     orig_index = t.arrays(['evt', 'run'], library='pd')
                     orig_index = list(map(tuple, orig_index.values))
                 
@@ -64,7 +64,8 @@ def main(cfg: DictConfig) -> None:
                 R_df = R.RDF.MakeNumpyDataFrame(pred_dict)
                 R_df.Snapshot(cfg["output_tree_name"], output_filename)
                 mlflow.log_artifact(output_filename, artifact_path='pred')
-                del(df, R_df); os.remove(output_filename); gc.collect()
+                #del(df, R_df); os.remove(output_filename); gc.collect()
+                del(df, R_df); gc.collect()
             elif cfg["kind"] == 'for_evaluation':
                 df_pred = pd.DataFrame(pred_dict)
                 df_pred.to_csv(output_filename, index=False)

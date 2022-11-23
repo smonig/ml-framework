@@ -18,7 +18,7 @@ from omegaconf import OmegaConf, DictConfig
 
 from utils.processing import fill_placeholders
 
-@hydra.main()
+@hydra.main(config_path="configs")
 def main(cfg: DictConfig) -> None:
     cont_features = OmegaConf.to_object(cfg["cont_features"]) if cfg["cont_features"] is not None else None
     cat_features = OmegaConf.to_object(cfg["cat_features"]) if cfg["cat_features"] is not None else None
@@ -44,8 +44,8 @@ def main(cfg: DictConfig) -> None:
                 processes = list(sample.values())[0]
                 for process_name, process_cfg in processes.items():
                     print(f'    loading {process_name}')
-                    #data_sample = f[cfg["input_tree_name"]].arrays(input_branches, cut=process_cfg['cut'], library='pd')
-                    data_sample = f[cfg["input_tree_name"]].arrays(input_branches, library='pd')
+                    data_sample = f[cfg["input_tree_name"]].arrays(input_branches, cut=process_cfg['cut'], library='pd')
+                    #data_sample = f[cfg["input_tree_name"]].arrays(input_branches, library='pd')
                     if data_sample.shape[0]==0:
                         raise RuntimeError(f'DataFrame for process ({process_name}) is empty')
                     data_sample['group_name'] = process_name
@@ -73,6 +73,11 @@ def main(cfg: DictConfig) -> None:
 
     # clip tails in njets
     data['Njets'] = data.Njets.clip(0, 5)
+
+    # Total event weight
+    data['weight'] = 1
+    for w in cfg['weights']:
+        data['weight'] *= data[w]
 
     # split data into output nodes: either train+test (for training) or sample_name based splitting (for prediction)
     if cfg["for_training"]:
@@ -109,7 +114,7 @@ def main(cfg: DictConfig) -> None:
         outputs = {name: group for name, group in data.groupby('group_name')}
         output_samples = outputs.values()
         output_sample_names = outputs.keys()
-        output_sample_names = [fill_placeholders(cfg["output_filename_template"], {'{sample_name}': n}) for n in output_sample_names]
+        output_sample_names = [fill_placeholders(cfg["output_filename_template_predData"], {'{sample_name}': n}) for n in output_sample_names]
 
         # fetch already fitted pipe
         with open(to_absolute_path(cfg["input_pipe_file"]), 'rb') as f:
@@ -125,6 +130,7 @@ def main(cfg: DictConfig) -> None:
     print('\n--> Storing to output files...')
     for output_sample_name, output_sample in zip(output_sample_names, output_samples):
         print(f'    {output_sample_name}')
+
         # derive class imbalance weights (per output node: train/test)
         if cfg["for_training"]:
             w_class_imbalance_map = {}
@@ -145,6 +151,7 @@ def main(cfg: DictConfig) -> None:
         if os.path.exists(f'{output_filename}.h5'):
             os.remove(f'{output_filename}.h5')
         group_names = ['cont_features', 'cat_features', 'misc_features', 'targets']
+        print(misc_features)
         group_list = [cont_features, cat_features, misc_features, [_target]]
         for group_name, group in zip(group_names, group_list):
             if group is not None:
