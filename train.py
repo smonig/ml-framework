@@ -12,7 +12,7 @@ from hydra.utils import to_absolute_path
 from omegaconf import OmegaConf, DictConfig
 from utils.processing import read_hdf
 
-@hydra.main(config_path="configs", config_name="cp_htautau_mutauh")
+@hydra.main(config_path="configs")
 def main(cfg: DictConfig) -> None:
     # load groups into DataFrame
     print('\n--> Loading training data')

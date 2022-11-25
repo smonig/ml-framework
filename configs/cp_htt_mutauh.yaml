@@ -171,7 +171,7 @@ pca: null # null to not apply PCA
 train_file: 'data/mutau/UL2018/skims/os/train.h5'
 n_splits: 2 # will split training data into len(set(xtrain_split_feature % n_splits)) folds and train a separate model on each
 xtrain_split_feature: 'evt' # used only if n_splits > 1; xtrain = cross-training
-train_size: 0.5 ## CHECK! want to make rotative setup
+train_size: 1 ## CHECK! want to make rotative setup
 
 # Training parameters
 model_param:
@@ -207,15 +207,11 @@ run_id: ???
 
 # Preprocessing
 output_path: data/mutau/UL${year}/skims/os/ # relative path
-output_filename_template_trainData: '{sample_name}_train'
-output_filename_template_predData: '{sample_name}_forPred'
-output_samples:
+output_samples_train:
   - train
   - test
 # Prediction
-output_filename_template_pred: 
-  for_datacard: '{sample_name}_pred.root'
-  for_evaluation: '{sample_name}.csv'
+output_filename_template_pred: '{sample_name}_pred'
 output_tree_name_pred: HTauTauTree
-
+output_format: ??? # can be root or csv
 

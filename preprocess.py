@@ -31,12 +31,9 @@ def main(cfg: DictConfig) -> None:
     data_samples = []
     _target = 'target' # internal target name
     for sample in cfg["input_samples"]:
-        if cfg["for_training"]:
-            assert len(sample)==1 # for training, sample is a dictionary with 1 element, see the cfg file
-            sample_name = list(sample.keys())[0]
-        else:
-            assert type(sample)==str
-            sample_name = sample
+        print(sample)
+        assert len(sample)==1 # for training, sample is a dictionary with 1 element, see the cfg file
+        sample_name = list(sample.keys())[0]
         input_filename = fill_placeholders(cfg["input_filename_template"], {'{sample_name}': sample_name})
         print(f'\n--> Opening {sample_name}...')
         with uproot.open(f'{cfg["input_path"]}/{input_filename}') as f:
@@ -88,7 +85,7 @@ def main(cfg: DictConfig) -> None:
 
         # split into output_samples[0] -> train, output_samples[1] -> test
         output_samples = train_test_split(data, train_size=cfg["train_size"], stratify=data[strat_key], random_state=1357)
-        output_sample_names = cfg["output_samples"]
+        output_sample_names = cfg["output_samples_train"]
         assert len(output_sample_names)==len(output_samples)
 
         # create preprocessing pipe
@@ -114,7 +111,7 @@ def main(cfg: DictConfig) -> None:
         outputs = {name: group for name, group in data.groupby('group_name')}
         output_samples = outputs.values()
         output_sample_names = outputs.keys()
-        output_sample_names = [fill_placeholders(cfg["output_filename_template_predData"], {'{sample_name}': n}) for n in output_sample_names]
+        output_sample_names = [fill_placeholders(cfg["output_filename_template_pred"], {'{sample_name}': n}) for n in output_sample_names]
 
         # fetch already fitted pipe
         with open(to_absolute_path(cfg["input_pipe_file"]), 'rb') as f:
